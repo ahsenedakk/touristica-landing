@@ -51,6 +51,9 @@ export function Planner({
 
   const handleAnalysisDone = useCallback(() => {
     setAnalyzing(false);
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     onAnalysisComplete(plan);
   }, [onAnalysisComplete, plan]);
 

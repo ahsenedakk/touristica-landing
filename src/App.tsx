@@ -13,12 +13,28 @@ import { recommend, type RankedHotel } from './engine/recommend';
 import { pickImage } from './engine/recommend';
 import type { Plan } from './engine/scoring';
 
+const HEADER_OFFSET = 80;
+
+function scrollToHotelsSection() {
+  const el = document.getElementById('hotels');
+  if (!el) return;
+
+  // Modal kapanınca buton focus'u scroll'u iptal edebiliyor
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+
+  const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+  // 'auto' = anında git (smooth bazen iptal oluyor)
+  window.scrollTo({ top, behavior: 'auto' });
+}
+
 export default function App() {
   const [recommendations, setRecommendations] = useState<RankedHotel[] | null>(null);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [filter, setFilter] = useState<string>('all');
+  const [scrollTicket, setScrollTicket] = useState(0);
   const plannerRef = useRef<HTMLDivElement>(null);
-  const hotelsRef = useRef<HTMLDivElement>(null);
 
   const handleAnalysisComplete = (p: PlanType) => {
     setPlan(p);
@@ -29,40 +45,43 @@ export default function App() {
       hotel: { ...r.hotel, image: pickImage(r.hotel, p.tripType) },
     }));
     setRecommendations(withImages);
+    setScrollTicket((n) => n + 1);
   };
 
-  // Scroll only after recommendations are in the DOM (avoids cancelled smooth scroll)
   useEffect(() => {
-    if (!recommendations) return;
+    if (!scrollTicket || !recommendations) return;
 
-    const scroll = () => {
-      const el = hotelsRef.current ?? document.getElementById('hotels');
-      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    // Wait for paint + layout of AI cards
-    const t1 = window.setTimeout(scroll, 100);
-    const t2 = window.setTimeout(scroll, 450);
+    // DOM güncellensin, sonra kesin kaydır
+    const t1 = window.setTimeout(scrollToHotelsSection, 50);
+    const t2 = window.setTimeout(scrollToHotelsSection, 200);
+    const t3 = window.setTimeout(scrollToHotelsSection, 500);
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
+      window.clearTimeout(t3);
     };
-  }, [recommendations]);
+  }, [scrollTicket, recommendations]);
 
   const scrollToPlanner = () => plannerRef.current?.scrollIntoView({ behavior: 'smooth' });
-  const scrollToHotels = () => hotelsRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToHotels = () => scrollToHotelsSection();
 
   return (
-    <div id="top" className="min-h-screen bg-sand">
+    <div className="min-h-screen bg-sand">
       <Header />
       <Hero onPlan={scrollToPlanner} />
       <div ref={plannerRef}>
         <Planner onAnalysisComplete={handleAnalysisComplete} />
       </div>
-      <Destinations onSelect={(k) => { setFilter(k); setRecommendations(null); setPlan(null); setTimeout(scrollToHotels, 100); }} />
-      <div ref={hotelsRef}>
-        <Hotels recommendations={recommendations} plan={plan} filter={filter} />
-      </div>
+      {/* Öneriler planlayıcının hemen altında — Destinations araya girmesin */}
+      <Hotels recommendations={recommendations} plan={plan} filter={filter} />
+      <Destinations
+        onSelect={(k) => {
+          setFilter(k);
+          setRecommendations(null);
+          setPlan(null);
+          setTimeout(scrollToHotels, 100);
+        }}
+      />
       <Campaigns />
       <Experience />
       <Reviews />

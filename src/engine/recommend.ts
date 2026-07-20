@@ -1,4 +1,4 @@
-import { hotels, formatTRY, type Hotel } from '../data';
+import { hotels, formatTRY, px, type Hotel } from '../data';
 import { scoreHotel, type Plan, type Subscores } from './scoring';
 
 export type RankedHotel = {
@@ -103,20 +103,19 @@ function generateReasons(h: Hotel, p: Plan, subs: Subscores): string[] {
   return out.slice(0, 6);
 }
 
-// Pick a gallery image that matches the trip type — curated Pexels photos
-// that visually represent each holiday category (couples, families, spa, etc.)
+// Trip-type curated Pexels photos — each category has a distinct visual mood
 const TRIP_IMAGES: Record<string, number[]> = {
-  family: [1287460, 1648377, 672532, 1450363], // kids playing, aquapark, family room
-  honeymoon: [1024311, 1450389, 2467558, 189296], // couples, romantic suite, sunset dinner
-  luxury: [2021745, 261101, 3225531, 1571463], // private villa, infinity pool, premium suite
-  spa: [3997991, 3865638, 3998029, 6621336], // spa center, massage, wellness pool
-  beach: [1450389, 261101, 259005, 1287460], // beach, pier, sunbeds, sea view
-  budget: [1287460, 259005, 261101, 1450389], // standard room, pool, garden, beach
+  family: [1648377, 672532, 1450363, 1287460, 3662667, 1128318],
+  honeymoon: [1024311, 1414423, 1024993, 2373201, 3014856, 338504, 1576693, 2506923],
+  luxury: [2021745, 1571463, 261101, 3225531, 1743229, 1838554],
+  spa: [3997991, 3865638, 3998029, 3757942, 3188, 6621336],
+  beach: [1450389, 1174732, 259005, 1320686, 261101, 189296],
+  budget: [259005, 1287460, 261101, 1450389, 3225531, 2070053],
 };
 
+/** Category mood image for recommendation cards (stable per hotel id). */
 export function pickImage(h: Hotel, tripType: string): string {
   const pool = TRIP_IMAGES[tripType] ?? TRIP_IMAGES.beach;
-  // Pick a stable image from the pool based on hotel id so each hotel differs
   const idx = (h.id - 1) % pool.length;
   return px(pool[idx], 1200);
 }

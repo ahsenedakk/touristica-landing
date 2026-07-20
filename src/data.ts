@@ -83,7 +83,7 @@ export type Stats = {
   hotels_updated_today: number;
 };
 
-const px = (id: number, w = 1200) =>
+export const px = (id: number, w = 1200) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${w}`;
 
 const g = (ids: number[]) => ids.map((id) => px(id));

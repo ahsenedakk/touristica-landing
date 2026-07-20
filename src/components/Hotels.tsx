@@ -29,7 +29,7 @@ export function Hotels({
   const showAI = !!recommendations && !!plan;
 
   return (
-    <section id="hotels" className="scroll-mt-20 bg-mist py-16 lg:py-24">
+    <section id="hotels" className="scroll-mt-24 bg-mist py-16 lg:py-24">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="max-w-2xl">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#EF3E42]/10 px-3.5 py-1.5 text-[12px] font-bold uppercase tracking-widest text-[#EF3E42] ring-1 ring-[#EF3E42]/20">
