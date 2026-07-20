@@ -103,14 +103,14 @@ function generateReasons(h: Hotel, p: Plan, subs: Subscores): string[] {
   return out.slice(0, 6);
 }
 
-// Trip-type curated Pexels photos — each category has a distinct visual mood
+// Trip-type curated Pexels photos — distinct mood per category (all IDs HTTP 200)
 const TRIP_IMAGES: Record<string, number[]> = {
-  family: [1648377, 672532, 1450363, 1287460, 3662667, 1128318],
+  family: [1648377, 672532, 1128318, 1128317, 2253879, 1148998, 3662667, 1450363],
   honeymoon: [1024311, 1414423, 1024993, 2373201, 3014856, 338504, 1576693, 2506923],
-  luxury: [2021745, 1571463, 261101, 3225531, 1743229, 1838554],
-  spa: [3997991, 3865638, 3998029, 3757942, 3188, 6621336],
-  beach: [1450389, 1174732, 259005, 1320686, 261101, 189296],
-  budget: [259005, 1287460, 261101, 1450389, 3225531, 2070053],
+  luxury: [2021745, 1571463, 1743229, 1838554, 258154, 3225531, 261101],
+  spa: [3997991, 3865638, 3998029, 3757942, 6621336, 3757952, 3768916],
+  beach: [1450389, 1174732, 259005, 1320686, 1032650, 240526, 189296],
+  budget: [271624, 2070053, 1287460, 259005, 258154, 3225531],
 };
 
 /** Category mood image for recommendation cards (stable per hotel id). */
