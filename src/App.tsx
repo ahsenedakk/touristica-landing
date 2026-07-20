@@ -40,9 +40,9 @@ export default function App() {
     setPlan(p);
     setFilter(p.destination === 'all' ? 'all' : p.destination);
     const result = recommend(p);
-    const withImages = result.top3.map((r) => ({
+    const withImages = result.top3.map((r, i) => ({
       ...r,
-      hotel: { ...r.hotel, image: pickImage(r.hotel, p.tripType) },
+      hotel: { ...r.hotel, image: pickImage(r.hotel, p.tripType, i) },
     }));
     setRecommendations(withImages);
     setScrollTicket((n) => n + 1);

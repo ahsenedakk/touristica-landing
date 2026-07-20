@@ -103,19 +103,29 @@ function generateReasons(h: Hotel, p: Plan, subs: Subscores): string[] {
   return out.slice(0, 6);
 }
 
-// Trip-type curated Pexels photos — distinct mood per category (all IDs HTTP 200)
+// Trip-type curated Pexels photos — ONLY visually verified IDs.
+// pickImage uses recommendation rank (0,1,2…) so top-3 never share a photo.
 const TRIP_IMAGES: Record<string, number[]> = {
-  family: [1648377, 672532, 1128318, 1128317, 2253879, 1148998, 3662667, 1450363],
+  // Aile
+  family: [1648377, 1128318, 672532, 2253879, 1148998, 1128317, 3662667, 1450363],
+  // Balayı
   honeymoon: [1024993, 3014856, 1488315, 1024967, 1024960, 1779416, 34677241, 27268887],
-  luxury: [2021745, 1571463, 1743229, 1838554, 258154, 3225531, 261101],
-  spa: [3997991, 3865638, 3998029, 3757942, 6621336, 3757952, 3768916],
-  beach: [1450389, 1174732, 259005, 1320686, 1032650, 240526, 189296],
-  budget: [271624, 2070053, 1287460, 259005, 258154, 3225531],
+  // Lüks
+  luxury: [2021745, 1571463, 1743229, 1838554, 258154, 3225531, 261101, 261395],
+  // Spa: masaj / aromaterapi / wellness (yürüyüş, spor salonu, dişçi YOK)
+  spa: [3997991, 3757952, 3757942, 3865676, 4041392, 6621336, 3762875, 261327],
+  // Her Şey Dahil: kahvaltı → havuz → kahvaltı → havuz…
+  beach: [103124, 261101, 1126728, 189296, 376464, 338504, 302899, 258154],
+  // Ekonomik
+  budget: [271624, 1287460, 259005, 258154, 3225531, 261327, 189296, 1450389],
 };
 
-/** Category mood image for recommendation cards (stable per hotel id). */
-export function pickImage(h: Hotel, tripType: string): string {
+/**
+ * Mood image for a recommendation card.
+ * `slot` = rank index (0,1,2…) so the top-3 always get different photos.
+ */
+export function pickImage(_h: Hotel, tripType: string, slot = 0): string {
   const pool = TRIP_IMAGES[tripType] ?? TRIP_IMAGES.beach;
-  const idx = (h.id - 1) % pool.length;
+  const idx = ((slot % pool.length) + pool.length) % pool.length;
   return px(pool[idx], 1200);
 }
